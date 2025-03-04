@@ -1,0 +1,78 @@
+<main className="max-w-5xl mx-auto my-5 p-2 flex flex-row  justify-between">
+<div className="my-5">
+    <div className=" flex items-center gap-3">
+        <h1 className="text-3xl font-extrabold ">Invoice # {result?.id}</h1>
+
+        <div>
+            <Badge className={cn(
+                "bg-blue-500 text-white hover:bg-blue-600",
+                result?.status === 'open' && 'bg-blue-600',
+                result?.status === 'uncollectible' && 'bg-red-600',
+                result?.status === 'void' && 'bg-gray-600',
+                result?.status === 'paid' && 'bg-green-600',
+            )}>
+                {result?.status}
+            </Badge>
+        </div>
+    </div>
+
+    <h1 className="text-2xl my-4"> ${(result?.value / 100).toFixed(2)}</h1>
+
+    <h1 className="text-xl font-bold">Billing details</h1>
+
+    <div className="flex mt-3  max-w-xs">
+        <h1 className="w-1/2">Invoice Id</h1>
+        <p className="w-1/2">{result?.id}</p>
+    </div>
+    <div className="flex mt-3  max-w-xs">
+        <h1 className="w-1/2">Billing date </h1>
+        <p className="w-1/2">{
+            moment(result?.createTs).format('DD/MM/yy')
+        }</p>
+    </div>
+
+
+
+
+    {/* <pre>
+        {JSON.stringify(result, null, 2)}
+    </pre> */}
+</div>
+
+<div className="my-5">
+
+    <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+            <Button variant={'outline'} className="flex flex-row items-center">
+                <span className="text-xs  font-light tracking-widest">Current status </span> {result.status}
+                <ChevronDown/>
+            </Button>
+        </DropdownMenuTrigger>
+
+        <DropdownMenuContent>
+            <DropdownMenuLabel className="text-xs font-thin ">Change to </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            {
+                AVAILABLE_STATUSES.map(status => {
+                    return (
+                        <DropdownMenuItem asChild className="bg-none" key={status.id} >
+                            <form action={updateStatusAction} className="flex flex-col ">
+                                <input type="hidden" name='id' value={invoiceIdNumber} />
+                                <input type="hidden" name='status' value={status.id} />
+                               <button className="text-start w-full ">
+                               {status.label}
+                               </button>
+                              
+                            </form>
+                        </DropdownMenuItem>
+                    )
+                })
+            }
+
+        </DropdownMenuContent>
+    </DropdownMenu>
+
+
+</div>
+</main>
