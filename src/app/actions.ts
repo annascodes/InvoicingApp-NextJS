@@ -51,6 +51,26 @@ export async function updateStatusAction(formData:FormData) {
             eq(Invoices.userId, userId)
         )
     )
-    revalidatePath(`/invoices/${id}`)
+    revalidatePath(`/invoices/${id}`,'page')
     console.log(results)
+}
+
+export async function deleteInvoiceAction(formData:FormData) {
+    console.log('-----------------------inside deleteInvoiceAction')
+    const {userId} = await auth()
+    if(!userId){
+        throw new Error('no userId in (updateStatusAction) of action.ts')
+    }
+
+    const id = formData.get('id') as string;
+
+    const results = await db.delete(Invoices)
+    .where(
+        and(
+            eq(Invoices.id, parseInt(id)),
+            eq(Invoices.userId, userId)
+        )
+    )
+    console.log('^^^^^^^^^^^^^^',results)
+    redirect(`/dashboard`)
 }

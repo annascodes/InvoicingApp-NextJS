@@ -1,12 +1,19 @@
 'use client'
 import { Badge } from "@/components/ui/badge"
-import { db } from "@/db"
 import { Invoices } from "@/db/schema"
 import { cn } from "@/lib/utils"
-import { and, eq } from "drizzle-orm"
 import moment from "moment"
-import { auth } from "@clerk/nextjs/server"
-import { notFound } from "next/navigation"
+
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
 
 import {
     DropdownMenu,
@@ -18,8 +25,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { AVAILABLE_STATUSES } from "@/data/invoices"
-import { updateStatusAction } from "@/app/actions"
-import { ChevronDown } from "lucide-react"
+import { deleteInvoiceAction, updateStatusAction } from "@/app/actions"
+import { Bookmark, BookmarkCheck, ChevronDown, Ellipsis, Trash, Trash2 } from "lucide-react"
 import { useOptimistic } from "react"
 
 interface InvoiceProps {
@@ -41,13 +48,13 @@ export default function Invoice({ invoice }: InvoiceProps) {
             await updateStatusAction(formData)
         } catch (error) {
             setCurrentStatus(originalStatus)
-        }   
+        }
     }
 
     return (
         <main className="max-w-5xl mx-auto my-5 p-2 flex flex-row  justify-between">
             <div className="my-5">
-                <div className=" flex items-center gap-3">
+                <div className=" flex flex-wrap items-center gap-3">
                     <h1 className="text-3xl font-extrabold ">Invoice # {invoice?.id}</h1>
 
                     <div>
@@ -86,8 +93,8 @@ export default function Invoice({ invoice }: InvoiceProps) {
                 </pre> */}
             </div>
 
-            <div className="my-5">
-
+            <div className="my-5 flex flex-col items-end md:items-start   md:flex-row justify-start md:justify-between  gap-2 ">
+                {/* dropdown for status change  */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant={'outline'} className="flex flex-row items-center">
@@ -124,6 +131,67 @@ export default function Invoice({ invoice }: InvoiceProps) {
 
                     </DropdownMenuContent>
                 </DropdownMenu>
+                {/* dropdown for delete invoice and other  */}
+
+                <div>
+                    {/* ------------s */}
+
+
+
+                    <Dialog>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant={'outline'} className="flex flex-row items-center">
+                                    <Ellipsis />
+                                </Button>
+                            </DropdownMenuTrigger>
+
+                            <DropdownMenuContent>
+                                <DropdownMenuItem asChild className="bg-none"   >
+                                    <DialogTrigger asChild >
+                                        <button className="flex flex-row gap-2  ">
+                                            <Trash className="text-red-500" />
+                                            Delete invoice
+                                        </button>
+                                    </DialogTrigger>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild className="bg-none"   >
+                                    <form action={''} className="flex flex-row gap-2 ">
+                                        <BookmarkCheck className="w-10 h-auto text-blue-600" />
+                                        <input type="hidden" name='id' value={invoice?.id} />
+                                        <button className="text-start w-full ">
+                                            Bookmarked
+                                        </button>
+                                    </form>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        <DialogContent>
+                            <DialogHeader className="flex flex-col gap-5">
+                                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                                <DialogDescription>
+                                    This action cannot be undone. This will permanently delete your account
+                                    and remove your data from our servers.
+                                </DialogDescription>
+                                <DialogFooter>
+                                    <form action={deleteInvoiceAction} >
+                                        <input type="hidden" name='id' value={invoice?.id} />
+                                        <Button variant={'destructive'}>
+                                            <Trash2 />
+                                            <span className="tracking-widest"> Yes! Delete it, 100% sure.</span>
+                                        </Button>
+
+                                    </form>
+                                </DialogFooter>
+                            </DialogHeader>
+                        </DialogContent>
+                    </Dialog>
+
+
+                    {/* ------------e */}
+
+                </div>
 
 
             </div>

@@ -23,13 +23,13 @@ import { eq } from "drizzle-orm"
 
 
 export default async function Dashboard() {
-    const {userId } = await auth();
-    if(!userId){
+    const { userId } = await auth();
+    if (!userId) {
         throw new Error('no userId found')
     }
     const results = await db.select().from(Invoices)
         .where(eq(Invoices.userId, userId))
-    
+
     return (
         <main className="max-w-5xl mx-auto py-5">
             <div className="flex justify-between items-center">
@@ -42,7 +42,10 @@ export default async function Dashboard() {
                 </Button>
             </div>
             <Table>
-                <TableCaption>A list of your recent invoices.</TableCaption>
+                {(results && results.length === 0) ?
+                     <TableCaption className="tracking-widest my-14">No invoice added yet!</TableCaption> :
+                      <TableCaption className="text-xs tracking-widest">( A list of your recent invoices. )</TableCaption>
+                    } 
                 <TableHeader>
                     <TableRow>
                         <TableHead className="w-[100px]">Date</TableHead>
@@ -53,6 +56,7 @@ export default async function Dashboard() {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
+
                     {
                         results.map(results => {
                             return (
@@ -71,20 +75,20 @@ export default async function Dashboard() {
                                         </Link>
                                     </TableCell>
                                     <TableCell className=' '>
-                                        <Link href={`/invoices/${results.id}`}  className="p-2 hover:underline underline-offset-4 ">
-                                        johnfkendy@gmail.com
+                                        <Link href={`/invoices/${results.id}`} className="p-2 hover:underline underline-offset-4 ">
+                                            johnfkendy@gmail.com
                                         </Link>
                                     </TableCell>
                                     <TableCell >
-                                       <Link href={`/invoices/${results.id}`} className="p-2 ">
-                                       <Badge className="bg-blue-500 text-white hover:bg-blue-600">
-                                            {results.status}
-                                        </Badge>
-                                       </Link>
+                                        <Link href={`/invoices/${results.id}`} className="p-2 ">
+                                            <Badge className="bg-blue-500 text-white hover:bg-blue-600">
+                                                {results.status}
+                                            </Badge>
+                                        </Link>
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <Link href={`/invoices/${results.id}`} className="p-2 hover:underline underline-offset-4">
-                                        ${(results.value / 100).toFixed(2)}
+                                            ${(results.value / 100).toFixed(2)}
                                         </Link>
                                     </TableCell>
                                 </TableRow>
