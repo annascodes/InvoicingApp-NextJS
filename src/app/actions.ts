@@ -1,7 +1,7 @@
 'use server'
 
 import { auth } from "@clerk/nextjs/server";
-import { Invoices, Status } from "@/db/schema";
+import { Customers, Invoices, Status } from "@/db/schema";
 import { db } from "@/db";
 import { redirect } from "next/navigation";
 import { and, eq } from "drizzle-orm";
@@ -13,15 +13,33 @@ export async function createAction(formData:FormData) {
     if (!userId) {
         throw new Error("User is not authenticated.");
     }
-  
+   
     const value = Math.floor(parseFloat(String(formData.get('value')))) * 100;
     const description = formData.get('desc') as string;
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+
+
+    // though we inserting one but still gonna get an array 
+    const [customer] = await db.insert(Customers).values(
+        {
+            name,
+            email,
+            userId,    
+        }
+    ).returning(
+        {
+            id:Customers.id,
+            name: Customers.name,
+        }
+    )
 
     const results = await db.insert(Invoices).values(
         {
             value,
             description,
             userId,
+            customerId:customer.id,
             status: 'open'
         }
     ).returning(

@@ -1,6 +1,6 @@
 'use client'
 import { Badge } from "@/components/ui/badge"
-import { Invoices } from "@/db/schema"
+import { Customers, Invoices } from "@/db/schema"
 import { cn } from "@/lib/utils"
 import moment from "moment"
 
@@ -30,7 +30,9 @@ import { Bookmark, BookmarkCheck, ChevronDown, Ellipsis, Trash, Trash2 } from "l
 import { useOptimistic } from "react"
 
 interface InvoiceProps {
-    invoice: typeof Invoices.$inferSelect // tofind
+    invoice: typeof Invoices.$inferSelect & {
+        customer: typeof Customers.$inferSelect,
+    } // tofind
 }
 
 export default function Invoice({ invoice }: InvoiceProps) {
@@ -50,7 +52,7 @@ export default function Invoice({ invoice }: InvoiceProps) {
             setCurrentStatus(originalStatus)
         }
     }
-
+console.log('----invoice:', invoice)
     return (
         <main className="max-w-5xl mx-auto my-5 p-2 flex flex-row  justify-between">
             <div className="my-5">
@@ -81,8 +83,16 @@ export default function Invoice({ invoice }: InvoiceProps) {
                 <div className="flex mt-3  max-w-xs">
                     <h1 className="w-1/2">Billing date </h1>
                     <p className="w-1/2">{
-                        moment(invoice?.createTs).format('DD/MM/yy')
+                      invoice?.createTs &&  moment(invoice?.createTs).format('DD/MM/yy')
                     }</p>
+                </div>
+                <div className="flex mt-3  max-w-xs">
+                    <h1 className="w-1/2">Billing Name </h1>
+                    <p className="w-1/2">{invoice.customer.name} </p>
+                </div>
+                <div className="flex mt-3  max-w-xs">
+                    <h1 className="w-1/2">Billing Email </h1>
+                    <p className="w-1/2">{invoice.customer.email} </p>
                 </div>
 
 

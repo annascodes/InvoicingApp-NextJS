@@ -15,6 +15,20 @@
       "when": 1740824348275,
       "tag": "0001_steep_norrin_radd",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1741184939887,
+      "tag": "0002_glorious_maverick",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1741255503201,
+      "tag": "0003_smooth_magus",
+      "breakpoints": true
     }
   ]
 }

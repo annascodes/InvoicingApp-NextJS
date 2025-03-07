@@ -1,6 +1,6 @@
 
 import { db } from "@/db"
-import { Invoices } from "@/db/schema"
+import { Customers, Invoices } from "@/db/schema"
 import { and, eq } from "drizzle-orm"
 import { auth } from "@clerk/nextjs/server"
 import { notFound } from "next/navigation"
@@ -18,6 +18,7 @@ export default async function SingleInvoice(
     const invoiceIdNumber = parseInt(invoiceId);
 
     const [result] = await db.select().from(Invoices)
+        .innerJoin(Customers,eq(Invoices.customerId, Customers.id) )
         .where(
             and(
                 eq(Invoices.id, invoiceIdNumber),
@@ -28,7 +29,11 @@ export default async function SingleInvoice(
     if (!result) {
         notFound()
     }
+    const invoice = {
+        ...result.invoices, 
+        customer:  result.customers
+    }
     return (
-       <Invoice invoice={result} />
+       <Invoice invoice={invoice} />
     )
 }

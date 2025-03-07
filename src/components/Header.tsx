@@ -16,7 +16,7 @@ import { Button } from './ui/button';
 
 const Header = () => {
     const auth = useAuth()
-    console.log(auth)
+    // console.log(auth)
     const path = usePathname()
     return (
         <header className=' mb-12 fixed top-0 w-full bg-white z-30 '>

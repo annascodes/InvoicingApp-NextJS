@@ -17,7 +17,7 @@ import Link from "next/link"
 import { CirclePlus } from "lucide-react"
 
 import { db } from "@/db"
-import { Invoices } from "@/db/schema"
+import { Customers, Invoices } from "@/db/schema"
 import moment from "moment"
 import { eq } from "drizzle-orm"
 
@@ -27,9 +27,23 @@ export default async function Dashboard() {
     if (!userId) {
         throw new Error('no userId found')
     }
-    const results = await db.select().from(Invoices)
-        .where(eq(Invoices.userId, userId))
+    // const results= await db.select().from(Invoices)
+    //     .where(eq(Invoices.userId, userId))
 
+    const results_= await db.select().from(Invoices)
+        .innerJoin(Customers, eq(Invoices.customerId, Customers.id))
+        .where(eq(Invoices.userId, userId))
+    const results = results_.map(({invoices, customers})=>{
+        return(
+            {
+                ...invoices,
+                customer: customers
+            }
+        )
+    })
+    
+   
+    console.log('*** results_ :', results_)
     return (
         <main className="max-w-5xl mx-auto py-5">
             <div className="flex justify-between items-center">
@@ -52,6 +66,7 @@ export default async function Dashboard() {
                         <TableHead>Customer</TableHead>
                         <TableHead>Email</TableHead>
                         <TableHead>Status</TableHead>
+                        <TableHead>Description</TableHead>
                         <TableHead className="text-right">Value</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -70,13 +85,13 @@ export default async function Dashboard() {
                                     </TableCell>
                                     <TableCell>
                                         <Link href={`/invoices/${results.id}`} className="p-2 hover:underline underline-offset-4">
-                                            John F. Kenedy
+                                       {results.customer.name} ({results.customer.id})
 
                                         </Link>
                                     </TableCell>
                                     <TableCell className=' '>
                                         <Link href={`/invoices/${results.id}`} className="p-2 hover:underline underline-offset-4 ">
-                                            johnfkendy@gmail.com
+                                        {results.customer.email}
                                         </Link>
                                     </TableCell>
                                     <TableCell >
@@ -84,6 +99,11 @@ export default async function Dashboard() {
                                             <Badge className="bg-blue-500 text-white hover:bg-blue-600">
                                                 {results.status}
                                             </Badge>
+                                        </Link>
+                                    </TableCell>
+                                    <TableCell className="  border-black">
+                                        <Link href={`/invoices/${results.id}`} className="p-2   border-black hover:underline underline-offset-4">
+                                          {results.description}
                                         </Link>
                                     </TableCell>
                                     <TableCell className="text-right">

@@ -50,7 +50,9 @@ export default function Dashboard() {
                 </pre>
             </div> */}
 
-            <Form action={createAction} onSubmit={handleOnSubmit} className="md:max-w-xs flex flex-col gap-2">
+            
+
+            <form action={createAction} onSubmit={handleOnSubmit} className="md:max-w-xs flex flex-col gap-2">
                 <div>
                     <Label htmlFor="name" className="text-sm mb-2">Billing Name</Label>
                     <Input id='name' name="name" type="text" />
@@ -70,7 +72,7 @@ export default function Dashboard() {
 
                 <SubmitButton />
 
-            </Form>
+            </form>
 
 
 
